@@ -296,8 +296,30 @@ fun function(x: T1, y: T2): T3 {
 * 安全调用
 
   如果我们想要使用可空类型进行一些方法调用, 可以采用安全调用`?.`
+  
+* `let()`函数
 
+  ```kotlin
+  var author: Int?
+  author?.let {
+      // author在函数中成为非空类型
+  }
+  ```
 
+* `Elvis`运算符(`?:`)
+
+  ```kotlin
+  var nullableInt: Int? = 10
+  var num = nullableInt ?: 10
+  ```
+
+  这个运算符表明的意思是可空值不为空就选择这个值, 否则就选用运算符后的默认值, 和C++三目运算符效果很像.
+
+  
+
+## 数组和列表(Array和Lists)
+
+`kotlin`中的Arrays代表了`Java`中基础的`array`类型(类似`String[]`这种), 在连续的存储空间中存储多个值
 
 ## 类
 
