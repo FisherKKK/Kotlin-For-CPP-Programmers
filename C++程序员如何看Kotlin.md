@@ -317,9 +317,200 @@ fun function(x: T1, y: T2): T3 {
 
   
 
-## 数组和列表(Array和Lists)
+## 数组和列表(Array & Lists)
 
-`kotlin`中的Arrays代表了`Java`中基础的`array`类型(类似`String[]`这种), 在连续的存储空间中存储多个值
+### 数组
+
+#### 基本使用方法
+
+`kotlin`中的Arrays代表了`Java`中基础的`array`类型(类似`String[]`这种), 在连续的存储空间中存储多个值. 这里数组的含义和C++并无不同
+
+* 创建数组`arrayOf()`, 产生的类型为`Array<T>`, `T`表示泛型; 同样我们还可以采用`Array(size: Int) { init }`的方式创建数组, 这里面用到了lambda表达式
+* 创建基本数据类型的数组, `intArrayOf()`等用来创建基本数据类型数组, 在编译过程中这些数组会被转换成`T[]`
+* 上述的数组都自带方法进行相互转换`toxxxx()`方法即可
+
+#### 数组迭代
+
+* 采用`for in`循环的方式, 方法同C++
+* 采用lambda表达式, `args.forEach {}`
+
+
+
+### Lists
+
+`List`在`Kotlin`中也是一个接口**Interface**, 它有一些具体的实现如: `ArrayList`, `LinkedList`等, 一般来说数组比列表效率更高, 这在`C++`以及人尽皆知, 但是`List`可以动态扩容(dynamically-sized), 而数组只能是固定的尺寸.
+
+#### 基本使用方法
+
+* 创建一个列表
+
+  ```kotlin
+  val list = listOf() // 产生不可更改的列表
+  val arrayList = arrayListOf() // 可变列表
+  val mutableList = mutableListOf() // 可变列表
+  ```
+
+* **CURD**(主要针对可变列表)
+
+  ```kotlin
+  arrayList.isEmpty() // 判断表是否为空
+  // size属性, first(), last()方法获取元素
+  // 由于运算符重载的原因, 因此可以采用[]方法访问元素
+  arrayList[2]
+  // 数组切片, 切片产生的列表是新生成的, 和之前的列表无关
+  arrayList.slice(1..2)
+  // 检查元素是否在列表中
+  arrayList.contain(2)
+  // CURD
+  add
+  remove
+  removeAt
+  indexOf
+  
+  ```
+
+* 列表的迭代, 基本和数组一致, 还可以使用`withIndex()`进行迭代, 从而包含下标信息
+
+  ```kotlin
+  for ((index, num) in numbers.withIndex()) {
+      
+  }
+  ```
+
+### 可空序列
+
+* 序列可空`val nums: ArrayList<Int>?`
+* 元素可空`val nums: ArrayList<Int?>`
+
+
+
+## 表和集合(Maps & Sets)
+
+### 表
+
+#### 基本操作
+
+* 创建表
+
+  ```kotlin
+  val map = mapOf(a to A, b to B) // 实际上是Pair对, 产生不可修改的map
+  val mutableMap = mutableMapOf() // 可变表
+  val hashMap = hashMapOf() // 哈希表
+  val hashMap = HashMap<T1, T2>() // H链式ash表
+  ```
+
+* **CRUD**
+
+  1. 采用下标方式的访问或者`get`方法
+  2. 采用下标方式的增加更新或者`put`方法
+  3. 采用`remove`进行移除
+
+### 集合
+
+无序唯一存在值的集合, 具有离散数学集合性质, 基本使用方式同上述, 不再赘述
+
+需要注意的一点是类似`Python`的解包运算符, 将数组转化为集合
+
+```kotlin
+val someSet = mutableSetOf(*array)
+```
+
+
+
+## Lambda表达式
+
+lambda表达式是没有名字的函数, 你可以将它分配给一个变量, 然后到处传递它
+
+### Lambda基础
+
+lambda被称为匿名函数, 又或者是闭包, 因为**它能在自己的域内关闭变量和常量**, 通俗地来讲就是:
+
+* lambda能够具有上下文环境, 就像一个嵌套函数一样
+* 定义在lambda内部地变量和常量无法被外部所访问, 具有闭包性
+
+```kotlin
+// examples
+var lambda: (Int, Int) -> Int
+// 这个例子表明了这个lambda函数接受两个Int型参数, 返回Int
+
+lambda = { a: Int, b: Int -> Int
+          a * b
+}
+// 由于lambda表达式自动返回最后一行作为返回值
+```
+
+但是有以下几点需要注意:
+
+* lambda不知此参数名赋值, 也就是某个形参等于实参这种赋值方式
+* lambda表达式要注明形参列表和返回值
+
+### 精简语法
+
+* 由于上面我们对`lambda`这个函数进行类型声明, 因此我们可以直接省略所有的类型声明
+
+	```kotlin
+	lambda = {a, b -> 
+		a * b         
+	}
+```
+
+* `it`关键字针对只有一个参数的时候, 可以直接使用`it`作为参数
+
+
+
+### Lambda作为参数
+
+```kotlin
+fun opOnNum(a: Int, b: Int, operation: (Int, Int) -> Int): Int {
+    val result = operation(a, b)
+    println(result)
+    return result
+}
+
+opOnNum(4, 2, lambda) // 如果是你传入的为lambda表达式, 那么直接传入即可
+
+fun add(x: Int, y: Int): Int {
+    return x + y;
+}
+
+opOnNum(1, 2, ::add) // 如果传入的是函数, 需要进行引用
+
+opOnNum(10, 20, { a, b ->
+	a + b
+}) // 直接传入labmda表达式
+
+// 如果lambda表达式在最后一个位置, 我们甚至可以直接, 将lambda表达式提出来写
+opOnNum(10, 20) {a, b -> 
+	a + b
+}
+```
+
+> 当然咯, 如果`Unit`, `Nothing`也可以作为lambda的返回类型, 这里也不再一一赘述
+
+由于lambda表达式具有上下文环境和闭包特性, 因此你可在lambda表达式内访问外部变量, 而内部变量无法被外部所访问.
+
+### 内置lambda表达式
+
+* `sort`函数
+
+  ```kotlin
+  val prices = arrayOf(10, 20, 30)
+  prices.sortWith(compareBy {
+      it % 10
+  })
+  ```
+
+* `forEach`进行迭代
+
+* `filter`可以迭代筛选`boolean`值为真的对象
+
+* `map`进行迭代, 操作所有对象
+
+* `fold`相当于对前后元素进行迭代操作, 需要传入第一个值
+
+* `reduce`直接将第一个元素作为初始值
+
+
 
 ## 类
 
@@ -331,7 +522,7 @@ fun function(x: T1, y: T2): T3 {
 class Type(val para1: T, var para2 : T)
 ```
 
-可以看到`kotlin`的主构造函数直接在括号中进行声明, 其中`para1`会作为类的一个属性, 对于`val`和`var`则表示了这个参数是否可变
+可以看到`kotlin`的主构造函数直接在括号中进行声明, 其中`para1`会作为类的一个属性, 对于`val`和`var`则表示了这个参数是否可变, 
 
 
 
